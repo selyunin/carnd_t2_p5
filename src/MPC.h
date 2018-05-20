@@ -17,7 +17,8 @@ const unsigned num_states = 6;
 const unsigned num_actuators = 2;
 
 /**
- * Length from front to CoG
+ * Distance between the center of mass
+ * of the vehicle and it's front axle
  */
 const double Lf = 2.67;
 

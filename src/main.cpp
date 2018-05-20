@@ -143,7 +143,7 @@ int main() {
            */
           state << 0 + v * latency,
         		   0 ,
-				   0 + v * -delta / Lf * latency,
+				   0 - v * delta / Lf * latency,
 				   v + a * latency,
 				   cte + v * sin(epsi) * latency,
 				   epsi + v * - delta / Lf * latency;
