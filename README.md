@@ -91,7 +91,6 @@ The MPC computes car trajectory for a finite horizon N.
 Since only the first control input will be taken, it is of no need
 to compute extremely large horizons (they will be re-computed in the 
 next time stamp anyway). 
-
 Time step dt is used to compute discrete approximation of the 
 kinematic model of the vehicle large dt values will account for 
 big error. 
@@ -115,6 +114,34 @@ We handle latency in the following way.
 We first take current speed and acceleration of the car from the simulator.
 We then assume that the car continues to drive (in its local coordinates)
 for a *latency* amount of time with this speed and acceleration. 
-The computed state is used as input for the MPC.
+This gives us an updated state, which is used as input for the MPC.
 
+MPC itself takes variables, constraints and the cost function and uses
+interior point optimization to find variables that satisfy the constraints 
+and give the lowest cost.
+Let's break it up:
+
+* Cost function (`fg[0]`) is a weighted some of quantities that should be 
+minimized: 
+(i) cross-track error, 
+(ii) orientation error, 
+(iii) difference between the current and the target speed,
+(iv) use of actuators,
+(v) gap between sequential actuations.
+Each quantity (i) - (v) is penalized in the cost function with a weight: 
+the larger weight depicts important quantity during optimization.
+
+* Constraints puts restriction on the variables:
+(i) start state cannot be changed,
+(ii) the following states should follow the kinematic model,
+(iii) actuator values are bounded.
+
+* Variables: state vector for each time stamp and the actuator values
+for time stamps `[1, N]` (we do not change state for t stamp `0`).
+
+The optimization then return values of the variables with the minimal 
+cost function. We apply first control inputs, send it to the simulator,
+and upon receiving the next state from the simulator recalculate.
+This allows use simple kinematic model of a car to find plausible control
+input via optimization.
 
